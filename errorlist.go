@@ -17,11 +17,6 @@ type ErrorList interface {
 	// print all the items. None of the errors passed to walkFn will be
 	// an ErrorList.
 	Walk(walkFn func(error))
-
-	// WalkPartial is like Walk, but if walkFn returns false,
-	// processing stops. The return value is true if walkFn never
-	// returned false.
-	WalkPartial(walkFn func(error) bool) bool
 }
 
 type errorList struct {
@@ -45,30 +40,6 @@ func (list *errorList) Walk(walkFn func(error)) {
 			walkFn(e)
 		}
 	}
-}
-
-// WalkPartial calls ErrorList.WalkPartial if err is an ErrorList and
-// walkFn(err) otherwise.
-func WalkPartial(err error, walkFn func(error) bool) bool {
-	if list, ok := err.(ErrorList); ok {
-		return list.WalkPartial(walkFn)
-	}
-	return walkFn(err)
-}
-
-func (list *errorList) WalkPartial(walkFn func(error) bool) bool {
-	again := true
-	for _, e := range list.a {
-		if l, ok := e.(ErrorList); ok {
-			again = l.WalkPartial(walkFn)
-		} else {
-			again = walkFn(e)
-		}
-		if !again {
-			break
-		}
-	}
-	return again
 }
 
 func (list *errorList) Error() string {
