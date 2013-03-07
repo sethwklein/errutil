@@ -13,6 +13,9 @@ type ErrorList interface {
 	// might be a list. It probably doesn't give very good results.
 	Error() string
 
+	// First returns the first error in the list.
+	First() error
+
 	// Walk is how callers who know this might be a list (possibly of lists)
 	// print all the items. None of the errors passed to walkFn will be
 	// an ErrorList.
@@ -23,18 +26,36 @@ type errorList struct {
 	a []error
 }
 
-// Walker is a subset of ErrorList used by functions that require only it.
-type Walker interface {
-	Walk(func(error))
+// Firster is a subset of ErrorList used by functions that don't need the whole
+// thing.
+type Firster interface {
+	// This is always used in such a way that Error()string will also be
+	// present.
+	First() error
 }
 
-// Walk calls ErrorList.Walk if err is a Walker and walkFn(err) otherwise.
-func Walk(err error, walkFn func(error)) {
-	if list, ok := err.(Walker); ok {
-		list.Walk(walkFn)
-		return
+func (list *errorList) First() error {
+	// They're not supposed to do this, but let's be permissive.
+	if len(list.a) < 1 {
+		return nil
 	}
-	walkFn(err)
+	return list.a[0]
+}
+
+// First returns ErrorList.First if err is a Firster and err otherwise.
+func First(err error) error {
+	if list, ok := err.(Firster); ok {
+		return list.First()
+	}
+	return err
+}
+
+// Walker is a subset of ErrorList used by functions that don't need the whole
+// thing.
+type Walker interface {
+	// This is always used in such a way that Error()string will also be
+	// present.
+	Walk(func(error))
 }
 
 // Walk implements ErrorList.Walk.
@@ -46,6 +67,15 @@ func (list *errorList) Walk(walkFn func(error)) {
 			walkFn(e)
 		}
 	}
+}
+
+// Walk calls ErrorList.Walk if err is a Walker and walkFn(err) otherwise.
+func Walk(err error, walkFn func(error)) {
+	if list, ok := err.(Walker); ok {
+		list.Walk(walkFn)
+		return
+	}
+	walkFn(err)
 }
 
 type walkEnded struct{}

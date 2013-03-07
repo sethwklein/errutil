@@ -5,6 +5,26 @@ import (
 	"testing"
 )
 
+func TestFirstOne(t *testing.T) {
+	correct := New("a")
+	out := First(correct)
+	if out != correct {
+		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
+		t.Fail()
+	}
+}
+
+func TestFirstThree(t *testing.T) {
+	correct := New("a")
+	e2 := New("b")
+	e3 := New("c")
+	out := First(Append(correct, e2, e3))
+	if !reflect.DeepEqual(out, correct) {
+		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
+		t.Fail()
+	}
+}
+
 func TestMulti_Merr(t *testing.T) {
 	e1 := New("a")
 	e2 := New("b")
