@@ -23,18 +23,24 @@ type errorList struct {
 	a []error
 }
 
-// Walk calls ErrorList.Walk if err is an ErrorList and walkFn(err) otherwise.
+// Walker is a subset of ErrorList used by functions that require only it.
+type Walker interface {
+	Walk(func(error))
+}
+
+// Walk calls ErrorList.Walk if err is a Walker and walkFn(err) otherwise.
 func Walk(err error, walkFn func(error)) {
-	if list, ok := err.(ErrorList); ok {
+	if list, ok := err.(Walker); ok {
 		list.Walk(walkFn)
 		return
 	}
 	walkFn(err)
 }
 
+// Walk implements ErrorList.Walk.
 func (list *errorList) Walk(walkFn func(error)) {
 	for _, e := range list.a {
-		if l, ok := e.(ErrorList); ok {
+		if l, ok := e.(Walker); ok {
 			l.Walk(walkFn)
 		} else {
 			walkFn(e)
@@ -42,6 +48,7 @@ func (list *errorList) Walk(walkFn func(error)) {
 	}
 }
 
+// Error implements ErrorList.Error.
 func (list *errorList) Error() string {
 	if len(list.a) == 1 {
 		return list.a[0].Error()
@@ -55,15 +62,31 @@ func (list *errorList) Error() string {
 }
 
 // Append creates an ErrorList.
-// It is fine to call it with any mix of nil, error, and ErrorList arguments.
+// It is fine to call it with any mix of nil, error, and Walker arguments.
 // It will return nil, the only error passed in, or an ErrorList as appropriate.
+// If the first non-nil argument is an ErrorList returned by this function,
+// it may be modified.
 func Append(errs ...error) error {
+	// The common case is no errors and two arguments.
+	// The general loop below takes 6+ times as long to handle this.
+	if len(errs) == 2 && errs[0] == nil && errs[1] == nil {
+		return nil
+	}
+
 	var a []error
+	var list *errorList
 	for _, e := range errs {
 		if e == nil {
 			continue
 		}
-		if l, ok := e.(ErrorList); ok {
+		if len(a) == 0 {
+			if l, ok := e.(*errorList); ok {
+				a = l.a
+				list = l
+				continue
+			}
+		}
+		if l, ok := e.(Walker); ok {
 			l.Walk(func(err error) {
 				a = append(a, err)
 			})
@@ -77,6 +100,10 @@ func Append(errs ...error) error {
 	case 1:
 		return a[0]
 	default:
+		if list != nil {
+			list.a = a
+			return list
+		}
 		return &errorList{a}
 	}
 	panic("unreached")
