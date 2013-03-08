@@ -5,7 +5,7 @@
 package errors_test
 
 import (
-	"sethwklein.net/errors"
+	"sethwklein.net/go/errors"
 	"testing"
 )
 

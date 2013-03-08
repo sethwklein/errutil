@@ -6,7 +6,7 @@ package errors_test
 
 import (
 	"fmt"
-	"sethwklein.net/errors"
+	"sethwklein.net/go/errors"
 	"testing"
 )
 

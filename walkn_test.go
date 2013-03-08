@@ -3,7 +3,7 @@ package errors_test
 import (
 	"fmt"
 	"os"
-	"sethwklein.net/errors"
+	"sethwklein.net/go/errors"
 )
 
 func ExampleWalkN() {

@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sethwklein.net/errors"
+	"sethwklein.net/go/errors"
 )
 
 func ReinventTheIOUtil(filename string) (buf []byte, err error) {
