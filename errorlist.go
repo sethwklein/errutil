@@ -48,6 +48,30 @@ func (list *errorList) Walk(walkFn func(error)) {
 	}
 }
 
+type walkEnded struct{}
+
+func (_ walkEnded) Error() string {
+	return "walk ended"
+}
+
+// WalkN visits the first n entries in err. It uses Walk.
+func WalkN(err error, n int, walkFn func(error)) {
+	fn := func(e error) {
+		walkFn(e)
+		n--
+		if n <= 0 {
+			panic(walkEnded{})
+		}
+	}
+	defer func() {
+		e := recover()
+		if _, ok := e.(walkEnded); !ok {
+			panic(e)
+		}
+	}()
+	Walk(err, fn)
+}
+
 // Error implements ErrorList.Error.
 func (list *errorList) Error() string {
 	if len(list.a) == 1 {
