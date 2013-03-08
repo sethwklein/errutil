@@ -1,0 +1,11 @@
+What?
+
+Package errors provides things for working with single and multiple errors.
+
+Import
+
+import "sethwklein.net/go/errors"
+
+Documentation
+
+http://godoc.org/sethwklein.net/go/errors
