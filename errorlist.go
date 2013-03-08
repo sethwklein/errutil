@@ -42,7 +42,7 @@ func (list *errorList) First() error {
 	return list.a[0]
 }
 
-// First returns ErrorList.First if err is a Firster and err otherwise.
+// First returns ErrorList.First() if err is a Firster and err otherwise.
 func First(err error) error {
 	if list, ok := err.(Firster); ok {
 		return list.First()
@@ -69,7 +69,8 @@ func (list *errorList) Walk(walkFn func(error)) {
 	}
 }
 
-// Walk calls ErrorList.Walk if err is a Walker and walkFn(err) otherwise.
+// Walk calls ErrorList.Walk(walkFn) if err is a Walker
+// and walkFn(err) otherwise.
 func Walk(err error, walkFn func(error)) {
 	if list, ok := err.(Walker); ok {
 		list.Walk(walkFn)
