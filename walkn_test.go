@@ -12,7 +12,10 @@ func ExampleWalkN() {
 		list = errors.Append(list, fmt.Errorf("number %v", i))
 	}
 	errors.WalkN(list, 3, func(e error) {
-		fmt.Fprintln(os.Stderr, e)
+		// In real code, this should generally use os.Stderr, but
+		// https://code.google.com/p/go/issues/detail?id=4550
+		// broke that for examples.
+		fmt.Fprintln(os.Stdout, e)
 	})
 	// Output:
 	// number 1
