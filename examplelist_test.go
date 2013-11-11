@@ -13,9 +13,8 @@ func ReinventTheIOUtil(filename string) (buf []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		err = errors.Append(err, f.Close())
-	}()
+	defer errors.AppendCall(&err, f.Close)
+
 	buf, err = ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err
@@ -23,7 +22,7 @@ func ReinventTheIOUtil(filename string) (buf []byte, err error) {
 	return buf, nil
 }
 
-func ExampleAppend() {
+func ExampleAppendCall() {
 	buf, err := ReinventTheIOUtil("errorlist.go")
 	if err != nil {
 		command := filepath.Base(os.Args[0])

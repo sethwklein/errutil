@@ -10,7 +10,7 @@ import "strings"
 // and its behavior is undefined.
 type ErrorList interface {
 	// Error is here to satisfy error and for callers who don't know this
-	// might be a list. It probably doesn't give very good results.
+	// might be a list. It probably doesn't give ideal results.
 	Error() string
 
 	// First returns the first error in the list.
@@ -162,4 +162,15 @@ func Append(errs ...error) error {
 		return &errorList{a}
 	}
 	panic("unreached")
+}
+
+// AppendCall appends any error returned by the function to any existing
+// errors. It is useful when returning an error from a deferred call.
+//
+// WARNING: WHEN DOING THAT, MAKE SURE YOU PASS A POINTER TO A NAMED RETURN
+// VALUE, ELSE THE RESULT WILL BE SILENTLY DISCARDED.
+//
+// See silentlybroken_test.go for examples of the problem.
+func AppendCall(errp *error, f func() error) {
+	*errp = Append(*errp, f())
 }

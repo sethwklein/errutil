@@ -1,6 +1,7 @@
 What?
 
-Package errors provides things for working with single and multiple errors.
+Package errors provides things for working with single and multiple errors and
+errors from deferred function calls.
 
 Import
 
