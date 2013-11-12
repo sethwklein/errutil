@@ -9,8 +9,7 @@ func TestFirstOne(t *testing.T) {
 	correct := New("a")
 	out := First(correct)
 	if out != correct {
-		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
-		t.Fail()
+		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
 	}
 }
 
@@ -20,8 +19,7 @@ func TestFirstThree(t *testing.T) {
 	e3 := New("c")
 	out := First(Append(correct, e2, e3))
 	if !reflect.DeepEqual(out, correct) {
-		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
-		t.Fail()
+		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
 	}
 }
 
@@ -33,8 +31,7 @@ func TestMulti_Merr(t *testing.T) {
 	out := Append(e1, e23)
 	correct := &errorList{[]error{e1, e2, e3}}
 	if !reflect.DeepEqual(out, correct) {
-		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
-		t.Fail()
+		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
 	}
 }
 
@@ -44,8 +41,7 @@ func TestMulti_ErrErrX(t *testing.T) {
 	out := Append(e2, e1)
 	correct := &errorList{[]error{e2, e1}}
 	if !reflect.DeepEqual(out, correct) {
-		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
-		t.Fail()
+		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
 	}
 }
 
@@ -55,8 +51,7 @@ func TestMulti_ErrErr(t *testing.T) {
 	out := Append(e1, e2)
 	correct := &errorList{[]error{e1, e2}}
 	if !reflect.DeepEqual(out, correct) {
-		t.Logf("\n%#v\n!=\n%#v\n", out, correct)
-		t.Fail()
+		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
 	}
 }
 
@@ -64,8 +59,7 @@ func TestMulti_ErrNil(t *testing.T) {
 	e := New("a")
 	out := Append(e, nil)
 	if out != e {
-		t.Logf("%#v != %#v\n", out, e)
-		t.Fail()
+		t.Errorf("%#v != %#v\n", out, e)
 	}
 }
 
@@ -73,8 +67,7 @@ func TestMulti_NilErr(t *testing.T) {
 	e := New("a")
 	out := Append(nil, e)
 	if out != e {
-		t.Logf("%#v != %#v\n", out, e)
-		t.Fail()
+		t.Errorf("%#v != %#v\n", out, e)
 	}
 }
 
@@ -82,31 +75,27 @@ func TestMulti_Err(t *testing.T) {
 	e := New("a")
 	out := Append(e)
 	if out != e {
-		t.Logf("%#v != %#v\n", out, e)
-		t.Fail()
+		t.Errorf("%#v != %#v\n", out, e)
 	}
 }
 
 func TestMulti_NilNilNil(t *testing.T) {
 	out := Append(nil, nil, nil)
 	if out != nil {
-		t.Logf("%#v\n", out)
-		t.Fail()
+		t.Errorf("%#v\n", out)
 	}
 }
 
 func TestMulti_NilNil(t *testing.T) {
 	out := Append(nil, nil)
 	if out != nil {
-		t.Logf("%#v\n", out)
-		t.Fail()
+		t.Errorf("%#v\n", out)
 	}
 }
 
 func TestMulti_Nil(t *testing.T) {
 	out := Append(nil)
 	if out != nil {
-		t.Logf("%#v\n", out)
-		t.Fail()
+		t.Errorf("%#v\n", out)
 	}
 }
