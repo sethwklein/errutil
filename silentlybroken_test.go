@@ -3,6 +3,9 @@ package errors_test
 // This file demonstrates how if you forget to name your return value, no
 // matter how you handle errors from deferred calls, you have a bug only
 // advanced testing will point out.
+//
+// All the broken* functions below should return the error from mockFile.Close,
+// but they don't because they forget to use a named return value.
 
 import (
 	"io"
@@ -65,8 +68,11 @@ func brokenManualWriteFile(filename string, data []byte) error {
 	}
 	defer func() {
 		e := f.Close()
-		if e != nil {
-			// this is simplistic because it assumes err == nil
+		if e != nil && err == nil {
+			// This is assumes both errors can't be meaningful
+			// at the same time which is not guaranteed by the
+			// method signatures or documentation, although it
+			// may be guaranteed by the implementation.
 			err = e
 		}
 	}()
@@ -79,21 +85,24 @@ func brokenManualWriteFile(filename string, data []byte) error {
 
 func TestBrokenAppend(t *testing.T) {
 	err := brokenAppendWriteFile("example.txt", []byte("example!"))
-	if err == nil { // err != mockError {
+	// expected fail
+	if err != nil { // err != mockError {
 		t.Errorf("%v != %v", err, mockError)
 	}
 }
 
 func TestBrokenCall(t *testing.T) {
 	err := brokenCallWriteFile("example.txt", []byte("example!"))
-	if err == nil { // err != mockError {
+	// expected fail
+	if err != nil { // err != mockError {
 		t.Errorf("%v != %v", err, mockError)
 	}
 }
 
 func TestBrokenManual(t *testing.T) {
 	err := brokenManualWriteFile("example.txt", []byte("example!"))
-	if err == nil { // err != mockError {
+	// expected fail
+	if err != nil { // err != mockError {
 		t.Errorf("%v != %v", err, mockError)
 	}
 }
