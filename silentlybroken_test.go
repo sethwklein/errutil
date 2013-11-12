@@ -1,15 +1,16 @@
-package errors_test
+package errutil_test
 
-// This file demonstrates how if you forget to name your return value, no
-// matter how you handle errors from deferred calls, you have a bug only
-// advanced testing will point out.
+// This file demonstrates how if you forget to name your return value, even if
+// you don't even use a library to handle errors from deferred calls, you have
+// a bug only advanced testing will point out.
 //
 // All the broken* functions below should return the error from mockFile.Close,
 // but they don't because they forget to use a named return value.
 
 import (
+	"errors"
 	"io"
-	"sethwklein.net/go/errors"
+	"sethwklein.net/go/errutil"
 	"testing"
 )
 
@@ -39,7 +40,7 @@ func brokenAppendWriteFile(filename string, data []byte) error {
 		return err
 	}
 	defer func() {
-		err = errors.Append(err, f.Close())
+		err = errutil.Append(err, f.Close())
 	}()
 	n, err := f.Write(data)
 	if err == nil && n < len(data) {
@@ -53,7 +54,7 @@ func brokenCallWriteFile(filename string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	defer errors.AppendCall(&err, f.Close)
+	defer errutil.AppendCall(&err, f.Close)
 	n, err := f.Write(data)
 	if err == nil && n < len(data) {
 		err = io.ErrShortWrite

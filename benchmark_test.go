@@ -1,8 +1,8 @@
-package errors_test
+package errutil_test
 
 import (
 	"fmt"
-	"sethwklein.net/go/errors"
+	"sethwklein.net/go/errutil"
 	"testing"
 )
 
@@ -17,13 +17,13 @@ func BenchmarkBase(b *testing.B) {
 func BenchmarkAppend(b *testing.B) {
 	var list error
 	for i := 0; i < b.N; i++ {
-		list = errors.Append(list, fmt.Errorf("number %v", i))
+		list = errutil.Append(list, fmt.Errorf("number %v", i))
 	}
 }
 
 func BenchmarkNil(b *testing.B) {
 	var list error
 	for i := 0; i < b.N; i++ {
-		list = errors.Append(list, nil)
+		list = errutil.Append(list, nil)
 	}
 }

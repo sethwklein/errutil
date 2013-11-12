@@ -1,12 +1,12 @@
 What?
 
-Package errors provides things for working with single and multiple errors and
-errors from deferred function calls.
+Package errutil provides things for working with multiple errors and errors
+from deferred function calls.
 
 Import
 
-import "sethwklein.net/go/errors"
+import "sethwklein.net/go/errutil"
 
 Documentation
 
-http://godoc.org/sethwklein.net/go/errors
+http://godoc.org/sethwklein.net/go/errutil

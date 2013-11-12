@@ -1,12 +1,13 @@
-package errors
+package errutil
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
 
 func TestFirstOne(t *testing.T) {
-	correct := New("a")
+	correct := errors.New("a")
 	out := First(correct)
 	if out != correct {
 		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
@@ -14,9 +15,9 @@ func TestFirstOne(t *testing.T) {
 }
 
 func TestFirstThree(t *testing.T) {
-	correct := New("a")
-	e2 := New("b")
-	e3 := New("c")
+	correct := errors.New("a")
+	e2 := errors.New("b")
+	e3 := errors.New("c")
 	out := First(Append(correct, e2, e3))
 	if !reflect.DeepEqual(out, correct) {
 		t.Errorf("\n%#v\n!=\n%#v\n", out, correct)
@@ -24,9 +25,9 @@ func TestFirstThree(t *testing.T) {
 }
 
 func TestMulti_Merr(t *testing.T) {
-	e1 := New("a")
-	e2 := New("b")
-	e3 := New("c")
+	e1 := errors.New("a")
+	e2 := errors.New("b")
+	e3 := errors.New("c")
 	e23 := Append(e2, e3)
 	out := Append(e1, e23)
 	correct := &errorList{[]error{e1, e2, e3}}
@@ -36,8 +37,8 @@ func TestMulti_Merr(t *testing.T) {
 }
 
 func TestMulti_ErrErrX(t *testing.T) {
-	e1 := New("a")
-	e2 := New("b")
+	e1 := errors.New("a")
+	e2 := errors.New("b")
 	out := Append(e2, e1)
 	correct := &errorList{[]error{e2, e1}}
 	if !reflect.DeepEqual(out, correct) {
@@ -46,8 +47,8 @@ func TestMulti_ErrErrX(t *testing.T) {
 }
 
 func TestMulti_ErrErr(t *testing.T) {
-	e1 := New("a")
-	e2 := New("b")
+	e1 := errors.New("a")
+	e2 := errors.New("b")
 	out := Append(e1, e2)
 	correct := &errorList{[]error{e1, e2}}
 	if !reflect.DeepEqual(out, correct) {
@@ -56,7 +57,7 @@ func TestMulti_ErrErr(t *testing.T) {
 }
 
 func TestMulti_ErrNil(t *testing.T) {
-	e := New("a")
+	e := errors.New("a")
 	out := Append(e, nil)
 	if out != e {
 		t.Errorf("%#v != %#v\n", out, e)
@@ -64,7 +65,7 @@ func TestMulti_ErrNil(t *testing.T) {
 }
 
 func TestMulti_NilErr(t *testing.T) {
-	e := New("a")
+	e := errors.New("a")
 	out := Append(nil, e)
 	if out != e {
 		t.Errorf("%#v != %#v\n", out, e)
@@ -72,7 +73,7 @@ func TestMulti_NilErr(t *testing.T) {
 }
 
 func TestMulti_Err(t *testing.T) {
-	e := New("a")
+	e := errors.New("a")
 	out := Append(e)
 	if out != e {
 		t.Errorf("%#v != %#v\n", out, e)

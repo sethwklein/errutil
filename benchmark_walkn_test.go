@@ -1,8 +1,8 @@
-package errors_test
+package errutil_test
 
 import (
 	"fmt"
-	"sethwklein.net/go/errors"
+	"sethwklein.net/go/errutil"
 	"testing"
 )
 
@@ -12,7 +12,7 @@ const attentionSpan = 30
 func BenchmarkWalkPanic(b *testing.B) {
 	var list error
 	for i := 1; i <= listLen; i++ {
-		list = errors.Append(list, fmt.Errorf("number %v", i))
+		list = errutil.Append(list, fmt.Errorf("number %v", i))
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -24,7 +24,7 @@ func BenchmarkWalkPanic(b *testing.B) {
 			}()
 			n := attentionSpan
 			i := 0
-			errors.Walk(list, func(e error) {
+			errutil.Walk(list, func(e error) {
 				_ = e
 				i++
 				if i >= n {
@@ -38,13 +38,13 @@ func BenchmarkWalkPanic(b *testing.B) {
 func BenchmarkWalkIgnore(b *testing.B) {
 	var list error
 	for i := 1; i <= listLen; i++ {
-		list = errors.Append(list, fmt.Errorf("number %v", i))
+		list = errutil.Append(list, fmt.Errorf("number %v", i))
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		n := attentionSpan
 		i := 0
-		errors.Walk(list, func(e error) {
+		errutil.Walk(list, func(e error) {
 			i++
 			if i > n {
 				return
@@ -57,11 +57,11 @@ func BenchmarkWalkIgnore(b *testing.B) {
 func BenchmarkWalkN(b *testing.B) {
 	var list error
 	for i := 1; i <= listLen; i++ {
-		list = errors.Append(list, fmt.Errorf("number %v", i))
+		list = errutil.Append(list, fmt.Errorf("number %v", i))
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		errors.WalkN(list, attentionSpan, func(e error) {
+		errutil.WalkN(list, attentionSpan, func(e error) {
 			_ = e
 		})
 	}

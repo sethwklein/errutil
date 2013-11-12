@@ -1,4 +1,4 @@
-package errors
+package errutil
 
 import "strings"
 
@@ -34,6 +34,7 @@ type Firster interface {
 	First() error
 }
 
+// First implements ErrorList.First.
 func (list *errorList) First() error {
 	// They're not supposed to do this, but let's be permissive.
 	if len(list.a) < 1 {

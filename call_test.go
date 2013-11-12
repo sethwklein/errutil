@@ -1,6 +1,7 @@
-package errors
+package errutil
 
 import (
+	"errors"
 	"io"
 	"reflect"
 	"testing"
@@ -8,7 +9,7 @@ import (
 
 func TestCall(t *testing.T) {
 	var err error
-	e := New("appended error")
+	e := errors.New("appended error")
 	AppendCall(&err, func() error {
 		return e
 	})
@@ -55,7 +56,7 @@ func TestCallNilNil(t *testing.T) {
 }
 
 func TestCallErrNil(t *testing.T) {
-	w := New("write error")
+	w := errors.New("write error")
 	err := doCall(w, nil)
 	if err != w {
 		t.Errorf("%v != %v", err, w)
@@ -63,7 +64,7 @@ func TestCallErrNil(t *testing.T) {
 }
 
 func TestCallNilErr(t *testing.T) {
-	c := New("close error")
+	c := errors.New("close error")
 	err := doCall(nil, c)
 	if err != c {
 		t.Errorf("%v != %v", err, c)
@@ -71,8 +72,8 @@ func TestCallNilErr(t *testing.T) {
 }
 
 func TestCallErrErr(t *testing.T) {
-	w := New("write error")
-	c := New("close error")
+	w := errors.New("write error")
+	c := errors.New("close error")
 	err := doCall(w, c)
 	correct := &errorList{[]error{w, c}}
 	if !reflect.DeepEqual(err, correct) {
