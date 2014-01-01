@@ -162,7 +162,7 @@ func Append(errs ...error) error {
 		}
 		return &errorList{a}
 	}
-	panic("unreached")
+	panic("unreached") // for compatibility with go1
 }
 
 // AppendCall appends any error returned by the function to any existing
