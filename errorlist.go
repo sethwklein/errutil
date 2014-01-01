@@ -80,14 +80,9 @@ func Walk(err error, walkFn func(error)) {
 	walkFn(err)
 }
 
-type walkEnded struct{}
-
-func (_ walkEnded) Error() string {
-	return "walk ended"
-}
-
 // WalkN visits the first n entries in err. It uses Walk.
 func WalkN(err error, n int, walkFn func(error)) {
+	type walkEnded struct{}
 	fn := func(e error) {
 		walkFn(e)
 		n--
@@ -97,9 +92,10 @@ func WalkN(err error, n int, walkFn func(error)) {
 	}
 	defer func() {
 		e := recover()
-		if _, ok := e.(walkEnded); !ok {
-			panic(e)
+		if _, ok := e.(walkEnded); ok {
+			return
 		}
+		panic(e)
 	}()
 	Walk(err, fn)
 }
