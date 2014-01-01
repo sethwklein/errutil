@@ -70,9 +70,13 @@ func (list *errorList) Walk(walkFn func(error)) {
 	}
 }
 
-// Walk calls ErrorList.Walk(walkFn) if err is a Walker
-// and walkFn(err) otherwise.
+// Walk does nothing if err is nil,
+// calls ErrorList.Walk(walkFn) if err is a Walker,
+// and calls walkFn(err) otherwise.
 func Walk(err error, walkFn func(error)) {
+	if err == nil {
+		return
+	}
 	if list, ok := err.(Walker); ok {
 		list.Walk(walkFn)
 		return
@@ -80,8 +84,11 @@ func Walk(err error, walkFn func(error)) {
 	walkFn(err)
 }
 
-// WalkN visits the first n entries in err. It uses Walk.
+// WalkN visits the first n non-nil entries in err. It uses Walk.
 func WalkN(err error, n int, walkFn func(error)) {
+	if err == nil {
+		return
+	}
 	type walkEnded struct{}
 	fn := func(e error) {
 		walkFn(e)
