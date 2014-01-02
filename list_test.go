@@ -22,6 +22,18 @@ func TestInvalidLenOne(t *testing.T) {
 	}
 }
 
+func TestErrorTwo(t *testing.T) {
+	err := Append(
+		errors.New("a"),
+		errors.New("b"),
+	)
+	want := "a\nb"
+	got := err.Error()
+	if want != got {
+		t.Errorf("wanted: %v, got: %v\n", want, got)
+	}
+}
+
 func TestNested(t *testing.T) {
 	chick := errors.New("in nest")
 	nest := &errorList{a: []error{
@@ -77,6 +89,20 @@ func TestWalkNPanic(t *testing.T) {
 	}()
 	WalkN(errors.New("dummy"), 1, func(_ error) {
 		panic(want)
+	})
+}
+
+func TestWalkNLimits(t *testing.T) {
+	err := Append(
+		errors.New("one"),
+		errors.New("two"),
+	)
+	var got error
+	WalkN(err, 1, func(err error) {
+		if got != nil {
+			t.Error("WalkN walked too far")
+		}
+		got = err
 	})
 }
 
