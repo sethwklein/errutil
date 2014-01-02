@@ -159,13 +159,13 @@ func Append(errs ...error) error {
 	case 1:
 		return a[0]
 	default:
-		if list != nil {
-			list.a = a
-			return list
-		}
-		return &errorList{a}
+		// moved below for go1 compatibility
 	}
-	panic("unreached") // for compatibility with go1
+	if list != nil {
+		list.a = a
+		return list
+	}
+	return &errorList{a}
 }
 
 // AppendCall appends any error returned by the function to any existing
