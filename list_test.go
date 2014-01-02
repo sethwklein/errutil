@@ -37,7 +37,7 @@ func TestErrorTwo(t *testing.T) {
 func TestNested(t *testing.T) {
 	chick := errors.New("in nest")
 	nest := &errorList{a: []error{
-		&errorList{a: []error{ chick }},
+		&errorList{a: []error{chick}},
 	}}
 	var got error
 	nest.Walk(func(err error) {
