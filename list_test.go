@@ -6,6 +6,80 @@ import (
 	"testing"
 )
 
+func TestInvalidNil(t *testing.T) {
+	got := (&errorList{}).First()
+	if got != nil {
+		t.Errorf("expected nil, got: %v\n", got)
+	}
+}
+
+func TestInvalidLenOne(t *testing.T) {
+	want := "want"
+	list := &errorList{a: []error{errors.New(want)}}
+	got := list.Error()
+	if want != got {
+		t.Errorf("wanted: %v, got: %v\n", want, got)
+	}
+}
+
+func TestNested(t *testing.T) {
+	chick := errors.New("in nest")
+	nest := &errorList{a: []error{
+		&errorList{a: []error{ chick }},
+	}}
+	var got error
+	nest.Walk(func(err error) {
+		got = err
+	})
+	if got != chick {
+		t.Errorf("expected: %v, got: %v\n", chick, got)
+	}
+}
+
+func TestWalkNil(t *testing.T) {
+	called := false
+	Walk(nil, func(err error) {
+		called = true
+	})
+	if called {
+		t.Error("func was called but should not have been")
+	}
+}
+
+func TestWalkNNil(t *testing.T) {
+	called := false
+	WalkN(nil, 1, func(err error) {
+		called = true
+	})
+	if called {
+		t.Error("func was called but should not have been")
+	}
+}
+
+func TestWalkSingle(t *testing.T) {
+	want := errors.New("want")
+	var got error
+	Walk(want, func(err error) {
+		got = err
+	})
+	if want != got {
+		t.Errorf("wanted: %v, got: %v\n", want, got)
+	}
+}
+
+func TestWalkNPanic(t *testing.T) {
+	want := errors.New("want")
+	defer func() {
+		got := recover()
+		if got != want {
+			t.Errorf("wanted: %v, got: %v\n", want, got)
+		}
+	}()
+	WalkN(errors.New("dummy"), 1, func(_ error) {
+		panic(want)
+	})
+}
+
 func TestFirstOne(t *testing.T) {
 	correct := errors.New("a")
 	out := First(correct)
