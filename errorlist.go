@@ -84,7 +84,7 @@ func Walk(err error, walkFn func(error)) {
 	walkFn(err)
 }
 
-// WalkN visits the first n non-nil entries in err. It uses Walk.
+// WalkN visits at most the first n non-nil entries in err. It uses Walk.
 func WalkN(err error, n int, walkFn func(error)) {
 	if err == nil {
 		return
@@ -121,10 +121,10 @@ func (list *errorList) Error() string {
 }
 
 // Append creates an ErrorList.
-// It is fine to call it with any mix of nil, error, and Walker arguments.
+// It is fine to call Append with any mix of nil, error, and Walker arguments.
 // It will return nil, the only error passed in, or an ErrorList as appropriate.
 // If the first non-nil argument is an ErrorList returned by this function,
-// it may be modified.
+// it may be modified. Append flattens its arguments.
 func Append(errs ...error) error {
 	// The common case is no errors and two arguments.
 	// The general loop below takes 6+ times as long to handle this.
